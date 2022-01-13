@@ -3,12 +3,12 @@ const Post = require('../../models/Post');
 module.exports = {
     Query: {
         async getPosts() {
-            try{
+            try {
                 const posts = await Post.find();
                 return posts;
-            } catch(err){
+            } catch (err) {
                 throw new Error(err);
             }
-        }
-    }
-}
+        },
+    },
+};
