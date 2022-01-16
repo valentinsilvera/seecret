@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form } from 'semantic-ui-react';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 
+import { AuthContext, AuthProvider } from '../context/Auth';
 import { useForm } from '../utils/Hooks';
 
 export default function Register() {
+    const context = useContext(AuthContext);
+
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -19,7 +22,8 @@ export default function Register() {
     });
 
     const [addUser, { loading }] = useMutation(REGISTER_USER, {
-        update(_, result) {
+        update(_, { data: { register: userData } }) {
+            context.login(userData);
             navigate('/');
         },
         onError(err) {

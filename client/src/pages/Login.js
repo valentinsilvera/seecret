@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form } from 'semantic-ui-react';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import { useNavigate } from 'react-router-dom';
 
+import { AuthContext } from '../context/Auth';
 import { useForm } from '../utils/Hooks';
 
 export default function Login() {
+    const context = useContext(AuthContext);
+
     const navigate = useNavigate();
 
     const [errors, setErrors] = useState({});
@@ -17,7 +20,8 @@ export default function Login() {
     });
 
     const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-        update(_, result) {
+        update(_, { data: { login: userData } }) {
+            context.login(userData);
             navigate('/');
         },
         onError(err) {
@@ -26,7 +30,6 @@ export default function Login() {
         variables: values,
     });
 
-    // addUser() needs to be inside a function because of hoisting
     function loginUserCallback() {
         loginUser();
     }
