@@ -2,34 +2,40 @@ import React, { useState } from 'react';
 import { Button, Form } from 'semantic-ui-react';
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
+import { useNavigate } from 'react-router-dom';
+
+import { useForm } from '../utils/Hooks';
 
 export default function Register() {
-    const [values, setValues] = useState({
+    const navigate = useNavigate();
+
+    const [errors, setErrors] = useState({});
+
+    const { onChange, onSubmit, values } = useForm(registerUser, {
         username: '',
         email: '',
         password: '',
         confirmPassword: '',
     });
 
-    const onChange = (event) => {
-        setValues({ ...values, [event.target.name]: event.target.value });
-    };
-
     const [addUser, { loading }] = useMutation(REGISTER_USER, {
-        update(proxy, result) {
-            console.log(result);
+        update(_, result) {
+            navigate('/');
+        },
+        onError(err) {
+            setErrors(err.graphQLErrors[0].extensions.errors);
         },
         variables: values,
     });
 
-    const onSubmit = (event) => {
-        event.preventDefault();
+    // addUser() needs to be inside a function because of hoisting
+    function registerUser() {
         addUser();
-    };
+    }
 
     return (
-        <div className="form-container">
-            <Form onSubmit={onSubmit} noValidate>
+        <div className="form-container" className={loading ? 'loading' : ''}>
+            <Form onSubmit={onSubmit} noValidate error>
                 <h1>Register</h1>
                 <Form.Field>
                     <Form.Input
@@ -38,6 +44,7 @@ export default function Register() {
                         name="username"
                         type="text"
                         value={values.username}
+                        error={errors.username ? true : false}
                         onChange={onChange}
                     />
                 </Form.Field>
@@ -48,16 +55,18 @@ export default function Register() {
                         name="email"
                         type="email"
                         value={values.email}
+                        error={errors.email ? true : false}
                         onChange={onChange}
                     />
                 </Form.Field>
                 <Form.Field>
                     <Form.Input
-                        label="Username"
+                        label="Password"
                         placeholder="Password..."
                         name="password"
                         type="password"
                         value={values.password}
+                        error={errors.password ? true : false}
                         onChange={onChange}
                     />
                 </Form.Field>
@@ -68,11 +77,23 @@ export default function Register() {
                         name="confirmPassword"
                         type="password"
                         value={values.confirmPassword}
+                        error={errors.confirmPassword ? true : false}
                         onChange={onChange}
                     />
                 </Form.Field>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" primary>
+                    Submit
+                </Button>
             </Form>
+            {Object.keys(errors).length > 0 && (
+                <div className='"ui error message'>
+                    <ul className="list">
+                        {Object.values(errors).map((value) => (
+                            <li key={value}>{value}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 }
