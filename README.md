@@ -87,4 +87,4 @@ npm start
 Finally, you can access the [Atlas interactive window](https://localhost:8000) and create queries and mutations there. For mutations you need to provide a token which can be obtained after creating/loging a user.
 
 ### Author
-- Valentin Silvera - [@ValentinSilvera](https://github.com/valentinsilvera)
+- Valentin Silvera - [@ValentinSilvera ](https://github.com/valentinsilvera)
